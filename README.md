@@ -1,6 +1,10 @@
 ## SqMan
 A python CLI application to manage, run, update your SonarQube local instances.
 
+### Requirements
+
+You need python installed on your system
+
 ### Setup
 
 #### Linux/macOS Users:
