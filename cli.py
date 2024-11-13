@@ -1,5 +1,6 @@
 import click
-import requests
+
+from api.sq_discover import *
 
 
 @click.group()
@@ -14,14 +15,9 @@ def greet(name):
     click.echo(f'Hello, {name}!')
 
 
-@click.command()
-def list_sq_versions():
-    response = requests.get('https://api.github.com/repos/SonarSource/sonarqube/tags?per_page=50')
-    click.echo(response.text)
-
-
 cli.add_command(greet)
-cli.add_command(list_sq_versions)
+cli.add_command(list)
+cli.add_command(plugins)
 
 if __name__ == '__main__':
     cli()
