@@ -1,4 +1,3 @@
-import json
 import re
 
 import click
@@ -14,17 +13,15 @@ headers = {
 @click.option('-v', '--version', help='Search for the specified version', type=str, required=False)
 def list(limit, version):
     """Prints the list of available SQ versions online"""
-    response = requests.get('http://api.github.com/repos/SonarSource/sonarqube/tags?per_page=100', headers=headers)
-    pattern = re.compile(r'"name":\s*"(\d+\.\d+\.\d+)"')
-    # json_strings = response.text.replace('\n', '')[1:-1].split('},  {')
-    # json_strings = [obj + '}' if i == 0 else '{' + obj if i == len(json_strings) - 1 else '{' + obj + '}' for
-    #                 i, obj in enumerate(json_strings)]
-    # json_objects = [json.loads(text) for text in json_strings]
+    url = 'http://api.github.com/repos/SonarSource/sonarqube/tags?per_page=100'
+    print(url)
+    response = requests.get(url, headers=headers)
+    pattern = re.compile(r'"name":\s*"(\d+\.\d+\.\d+\.?\d*)"')
     output = ""
     count = 0
-    for obj in json_objects:
-        if count < limit and (version is None or obj.get("name").startswith(version)):
-            output += 'SonarQube ' + obj.get("name") + '\n'
+    for obj in pattern.findall(response.text):
+        if count < limit and (version is None or obj.startswith(version)):
+            output += 'SonarQube ' + obj + '\n'
             count += 1
     click.echo(output)
 
@@ -33,17 +30,26 @@ def list(limit, version):
 @click.argument('sq_version', type=str)
 def plugins(sq_version):
     """Prints the embedded plugins of a specific SQ version"""
-    url = 'http://raw.githubusercontent.com/SonarSource/sonarqube/%s/build.gradle' % sq_version
+    major_version = int(sq_version.split('.')[0])
+    if major_version >= 8:
+        url = 'http://raw.githubusercontent.com/SonarSource/sonarqube/%s/build.gradle' % sq_version
+        pattern = re.compile(r"dependency\s+'([^']+-plugin[^']*)'")
+    elif major_version >= 7:
+        # TODO Still not catching versions with ${slangVersion}, and the final @jar should be removed
+        url = 'http://raw.githubusercontent.com/SonarSource/sonarqube/%s/sonar-application/build.gradle' % sq_version
+        pattern = re.compile(r"bundledPlugin\s+'([^']+-plugin[^']*)'")
+    else:
+        print("Version not supported")
+        return
     print(url)
     output = ""
     response = requests.get(url, headers=headers)
     if response.status_code != 200:
         print("ERROR", response)
         return
-    pattern = re.compile(r"dependency\s+'([^']+-plugin[^']*)'")
     for line in response.text.split('\n'):
         match = pattern.search(line)
         if match:
             group = match.group(1).split(':')[1:]
-            output += "".join(group) + '\n'
+            output += " ".join(group) + '\n'
     click.echo(output)

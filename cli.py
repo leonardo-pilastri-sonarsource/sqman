@@ -1,23 +1,15 @@
 import click
 
-from api.sq_discover import *
-
+import api.sq_discover as sq_discover
+import api.sq_install as sq_install
 
 @click.group()
 def cli():
     pass
 
-
-@click.command()
-@click.option('--name', prompt='Your name', help='The person to greet.')
-def greet(name):
-    """Simple program that greets NAME."""
-    click.echo(f'Hello, {name}!')
-
-
-cli.add_command(greet)
-cli.add_command(list)
-cli.add_command(plugins)
+cli.add_command(sq_discover.list)
+cli.add_command(sq_discover.plugins)
+cli.add_command(sq_install.install)
 
 if __name__ == '__main__':
     cli()

@@ -8,5 +8,4 @@ call .venv\Scripts\activate
 pip install -r requirements.txt
 
 :: Use the editable option if you want to change the scripts and try the on the fly
-::pip install --editable .
-pip install .
+pip install --editable .
