@@ -11,6 +11,7 @@ def cli():
 cli.add_command(sq_discover.list)
 cli.add_command(sq_discover.plugins)
 cli.add_command(sq_install.install)
+cli.add_command(sq_install.installed)
 cli.add_command(sq_run.start)
 
 if __name__ == '__main__':

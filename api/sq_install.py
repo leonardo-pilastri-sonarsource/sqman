@@ -8,6 +8,15 @@ import requests
 chunk_size = 8192
 num_bars = 50
 
+@click.command()
+def installed():
+    """Prints the list of installed SQ versions"""
+    if not os.path.exists(installs_folder):
+        print('No Sonarqube versions installed')
+        return
+    print('Installed Sonarqube versions:')
+    for folder in os.listdir(installs_folder):
+        print(folder)
 
 @click.command()
 @click.argument('sq_version', type=str)
@@ -34,7 +43,9 @@ def install(sq_version):
     file_path = os.path.join(installs_folder, file_name)
     response = requests.get(url, stream=True)
     response.raise_for_status()  # Check for download errors
-
+    if response.status_code != 200:
+        print(f"Download error: {response}")
+        return
     total_size = int(response.headers.get('content-length', 0))
     with open(file_path, "wb") as file:
         for chunk in response.iter_content(chunk_size=8192):  # Download in chunks

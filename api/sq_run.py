@@ -1,4 +1,6 @@
 import os.path
+import platform
+import subprocess
 import sys
 
 import click
@@ -26,3 +28,21 @@ def start(sq_version):
             sys.stdout.write(result.stdout)
             sys.stdout.flush()
     print('Starting Sonarqube %s ...' % sq_version)
+    if platform.system() == 'Windows':
+        bin_path = os.path.join(install_path, 'bin/windows-x86-64/StartSonar.bat')
+    elif platform.system() == 'Linux':
+        bin_path = os.path.join(install_path, 'bin/linux-x86-64/sonar.sh')
+    elif platform.system() == 'Darwin':
+        bin_path = os.path.join(install_path, 'bin/macosx-universal-64/sonar.sh')
+    else:
+        print('OS not supported')
+        return
+
+    try:
+        result = subprocess.run([bin_path], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+        sys.stdout.write(result.stdout)
+        sys.stdout.flush()
+    except subprocess.CalledProcessError as e:
+        print("An error occurred:", e)
+        print("Error output:", e.stderr)
+
