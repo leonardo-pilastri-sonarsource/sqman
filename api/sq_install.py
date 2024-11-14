@@ -1,17 +1,22 @@
 import os
 import zipfile
+from api.properties import installs_folder
 
 import click
 import requests
 
-home_folder = os.path.expanduser("~")
-installs_folder = os.path.join(home_folder, '.sqman/')
+chunk_size = 8192
+num_bars = 50
 
 
 @click.command()
 @click.argument('sq_version', type=str)
 def install(sq_version):
     """Downloads and installs a specific SQ version inside '~/.sqman' folder"""
+    if os.path.exists(os.path.join(installs_folder, sq_version)):
+        print('Sonarqube %s already installed' % sq_version)
+        return
+
     url = 'https://binaries.sonarsource.com/Distribution/sonarqube/'
 
     # Versions <= 3.7 zips are not named 'sonarqube', but 'sonar' instead
@@ -29,10 +34,16 @@ def install(sq_version):
     file_path = os.path.join(installs_folder, file_name)
     response = requests.get(url, stream=True)
     response.raise_for_status()  # Check for download errors
+
+    total_size = int(response.headers.get('content-length', 0))
     with open(file_path, "wb") as file:
         for chunk in response.iter_content(chunk_size=8192):  # Download in chunks
             file.write(chunk)
-    print(f"File downloaded and saved to: {file_path}")
+            downloaded_size = file.tell()
+            progress = downloaded_size / total_size
+            progress_bar = ('#' * int(progress * num_bars)).ljust(num_bars)
+            print(f"\r[{progress_bar}] {progress:.2%}", end='')
+    print(f"\nFile downloaded and saved to: {file_path}")
     unzip_and_rename(file_path, installs_folder, sq_version)
 
 
