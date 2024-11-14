@@ -12,8 +12,15 @@ installs_folder = os.path.join(home_folder, '.sqman/')
 @click.argument('sq_version', type=str)
 def install(sq_version):
     """Downloads and installs a specific SQ version inside '~/.sqman' folder"""
-    # TODO: wrong link, this downloads the code, not the binaries
-    url = 'http://api.github.com/repos/SonarSource/sonarqube/zipball/refs/tags/%s' % sq_version
+    url = 'https://binaries.sonarsource.com/Distribution/sonarqube/'
+
+    # Versions <= 3.7 zips are not named 'sonarqube', but 'sonar' instead
+    major_version = int(sq_version.split('.')[0])
+    if major_version < 4:
+        url += 'sonar-%s.zip' % sq_version
+    else:
+        url += 'sonarqube-%s.zip' % sq_version
+
     file_name = 'sonarqube%s.zip' % sq_version
 
     if not os.path.exists(installs_folder):
