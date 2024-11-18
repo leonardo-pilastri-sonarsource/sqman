@@ -1,12 +1,12 @@
 #!/bin/bash
 
 # Create a virtual environment only if it does not exist
-if [ ! -d ".venv" ]; then
-    python3 -m venv .venv/
+if [ ! -d ".uvenv" ]; then
+    python3 -m venv .uvenv/
 fi
 
 # Activate the virtual environment
-source .venv/bin/activate
+source .uvenv/bin/activate
 pip install -r requirements.txt
 
 # Use the editable option if you want to change the scripts and try the on the fly

@@ -9,12 +9,11 @@ headers = {
 
 
 @click.command()
-@click.option('-l', '--limit', help='Limits the amount of results', type=int, default=10)
-@click.option('-v', '--version', help='Search for the specified version', type=str, required=False)
+@click.option('-l', '--limit', help='Limits the amount of results', type=int, default=10, show_default=True)
+@click.option('-v', '--version', help='Search for versions starting with this value', type=str, required=False)
 def list(limit, version):
     """Prints the list of available SQ versions online"""
     url = 'http://api.github.com/repos/SonarSource/sonarqube/tags?per_page=100'
-    print(url)
     response = requests.get(url, headers=headers)
     pattern = re.compile(r'"name":\s*"(\d+\.\d+\.\d+\.?\d*)"')
     output = ""
