@@ -9,11 +9,13 @@ You need python installed on your system
 
 #### Linux/macOS Users:
 Open a terminal and navigate to the directory containing the `install.sh` script \
-Run the script using the command: `./install.sh`
+Run the script using the command: `source install.sh`
 
 #### Windows Users:
 Open Command Prompt navigate to the directory containing the `install.bat` script \
 Run the script using the command: `install.bat`
+
+This will also activate the python virtual environment.
 
 ### How to use
 
