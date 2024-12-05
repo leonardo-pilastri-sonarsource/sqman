@@ -1,13 +1,16 @@
 import os
 import zipfile
 
-from requests import HTTPError
-
-from api.properties import installs_folder
-
 import click
 import requests
 
+from api.properties import installs_folder
+
+repox_plugin_paths = {
+    'sonar-java': 'org/sonarsource/java/sonar-java-plugin/%s/sonar-java-plugin-%s.jar'
+}
+
+repox_dl_url = 'https://repox.jfrog.io/artifactory/sonarsource-public-dev/'
 chunk_size = 8192
 num_bars = 50
 
@@ -21,6 +24,40 @@ def installed():
     print('Installed Sonarqube versions:')
     for folder in os.listdir(installs_folder):
         print(folder)
+
+
+@click.command()
+@click.argument('sq_version', type=str)
+@click.argument('repo', type=str)
+@click.argument('plugin_version', type=str)
+def install_plugin(sq_version, repo, plugin_version):
+    """Downloads and installs a plugin from repox inside '~/.sqman/sq_version/extensions/plugins' folder"""
+    install_path = os.path.join(installs_folder, sq_version)
+    if not os.path.exists(install_path):
+        print('Sonarqube %s is not installed' % sq_version)
+        print('Run "sqman install %s" to install it' % sq_version)
+        return
+    repox_plugin_path = repox_plugin_paths[repo] % (plugin_version, plugin_version)
+    url = repox_dl_url + repox_plugin_path
+    plugins_folder = installs_folder.join('extensions').join('plugins')
+
+    print(url)
+    response = requests.get(url, stream=True)
+    if response.status_code != 200:
+        print(f"Download error: {response}")
+        return
+    file_path = plugins_folder.join(url.split('/')[-1])
+    response.raise_for_status()  # Check for download errors
+    total_size = int(response.headers.get('content-length', 0))
+    with open(file_path, "wb") as file:
+        for chunk in response.iter_content(chunk_size=8192):  # Download in chunks
+            file.write(chunk)
+            downloaded_size = file.tell()
+            progress = downloaded_size / total_size
+            progress_bar = ('#' * int(progress * num_bars)).ljust(num_bars)
+            print(f"\r[{progress_bar}] {progress:.2%}", end='')
+    print(f"\nFile downloaded and saved to: {file_path}")
+    file_path = os.path.join(plugins_folder, repo+'-plugin-'+plugin_version+'jar')
 
 
 @click.command()

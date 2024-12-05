@@ -26,3 +26,11 @@ sqman
 to get a list of available commands.
 
 For each command you can type `sqman <command> --help` to see the usage of that specific command
+
+
+
+## TODO List
+
+* The `install-plugin` command gets 401 on repox because it is not authenticated, is there a way to download public builds without auth?
+* Add local file to store the last sq version installed/used to automatically use when running `sqman run` without a 
+version argument
