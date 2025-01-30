@@ -4,6 +4,7 @@ import zipfile
 import click
 import requests
 
+import api.utils
 from api.properties import installs_folder
 from api.utils import get_installed_sq
 
@@ -66,20 +67,29 @@ def install_plugin(sq_version, repo, plugin_version):
 @click.argument('sq_version', type=str)
 def install(sq_version):
     """Downloads and installs a specific SQ version inside '~/.sqman' folder"""
-    if os.path.exists(os.path.join(installs_folder, sq_version)):
-        print('Sonarqube %s already installed' % sq_version)
+    candidates = api.utils.get_online_versions(sq_version)
+    if len(candidates) == 0:
+        print("Could not find any matching SQ version")
+        return
+    if len(candidates) > 1:
+        print('Must specify one between:')
+        for v in candidates: print(v)
+        return
+    version = candidates[0]
+    if os.path.exists(os.path.join(installs_folder, version)):
+        print('Sonarqube %s already installed' % version)
         return
 
     url = 'https://binaries.sonarsource.com/Distribution/sonarqube/'
 
     # Versions <= 3.7 zips are not named 'sonarqube', but 'sonar' instead
-    major_version = int(sq_version.split('.')[0])
+    major_version = int(version.split('.')[0])
     if major_version < 4:
-        url += 'sonar-%s.zip' % sq_version
+        url += 'sonar-%s.zip' % version
     else:
-        url += 'sonarqube-%s.zip' % sq_version
+        url += 'sonarqube-%s.zip' % version
 
-    file_name = 'sonarqube%s.zip' % sq_version
+    file_name = 'sonarqube%s.zip' % version
 
     if not os.path.exists(installs_folder):
         os.makedirs(installs_folder, exist_ok=True)
@@ -99,7 +109,7 @@ def install(sq_version):
             progress_bar = ('#' * int(progress * num_bars)).ljust(num_bars)
             print(f"\r[{progress_bar}] {progress:.2%}", end='')
     print(f"\nFile downloaded and saved to: {file_path}")
-    unzip_and_rename(file_path, installs_folder, sq_version)
+    unzip_and_rename(file_path, installs_folder, version)
 
 
 def unzip_and_rename(zip_path, extract_to, new_name):
