@@ -3,26 +3,21 @@ import re
 import click
 import requests
 
-headers = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"
-}
+from api import utils
+from api.properties import headers
 
 
 @click.command()
-@click.option('-l', '--limit', help='Limits the amount of results', type=int, default=10, show_default=True)
-@click.option('-v', '--version', help='Search for versions starting with this value', type=str, required=False)
-def list(limit, version):
-    """Prints the list of available SQ versions online"""
-    url = 'http://api.github.com/repos/SonarSource/sonarqube/tags?per_page=100'
-    response = requests.get(url, headers=headers)
-    pattern = re.compile(r'"name":\s*"(\d+\.\d+\.\d+\.?\d*)"')
-    output = ""
+@click.argument('sq_version', type=str, default="")
+@click.option('-l', '--limit', help='Limits the amount of results', type=int, default=20, show_default=True)
+def list(sq_version, limit):
+    """Prints the list of available SQ versions online starting with sq_version"""
+    versions = utils.get_online_versions(sq_version)
     count = 0
-    for obj in pattern.findall(response.text):
-        if count < limit and (version is None or obj.startswith(version)):
-            output += 'SonarQube ' + obj + '\n'
+    for obj in versions:
+        if count < limit:
+            print('SonarQube ' + obj)
             count += 1
-    click.echo(output)
 
 
 @click.command()
