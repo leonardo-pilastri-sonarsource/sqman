@@ -5,6 +5,7 @@ import click
 import requests
 
 from api.properties import installs_folder
+from api.utils import get_installed_sq
 
 repox_plugin_paths = {
     'sonar-java': 'org/sonarsource/java/sonar-java-plugin/%s/sonar-java-plugin-%s.jar'
@@ -16,13 +17,14 @@ num_bars = 50
 
 
 @click.command()
-def installed():
+@click.argument('sq_version', type=str, default="")
+def installed(sq_version):
     """Prints the list of installed SQ versions"""
-    if not os.path.exists(installs_folder):
+    installs = get_installed_sq(sq_version)
+    if len(installs) == 0:
         print('No Sonarqube versions installed')
-        return
     print('Installed Sonarqube versions:')
-    for folder in os.listdir(installs_folder):
+    for folder in installs:
         print(folder)
 
 
@@ -57,7 +59,7 @@ def install_plugin(sq_version, repo, plugin_version):
             progress_bar = ('#' * int(progress * num_bars)).ljust(num_bars)
             print(f"\r[{progress_bar}] {progress:.2%}", end='')
     print(f"\nFile downloaded and saved to: {file_path}")
-    file_path = os.path.join(plugins_folder, repo+'-plugin-'+plugin_version+'jar')
+    file_path = os.path.join(plugins_folder, repo + '-plugin-' + plugin_version + 'jar')
 
 
 @click.command()

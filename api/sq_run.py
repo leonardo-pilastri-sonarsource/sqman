@@ -9,20 +9,31 @@ from click.testing import CliRunner
 
 from api.properties import current_pid_file
 from api.properties import installs_folder
+from api.utils import get_installed_sq
 
 runner = CliRunner()
 
 
 @click.command()
-@click.argument('sq_version', type=str)
+@click.argument('sq_version', type=str, default="")
 def run(sq_version):
     """Starts an installed SQ instance"""
-    install_path = os.path.join(installs_folder, sq_version)
-    if not os.path.exists(install_path):
+    choices = get_installed_sq(sq_version)
+    if len(choices) == 0:
         print('Sonarqube %s is not installed' % sq_version)
         print('Run "sqman install %s" to install it' % sq_version)
         return
-    print('Starting Sonarqube %s ...' % sq_version)
+    if len(choices) > 1:
+        print('Must specify one between:')
+        for v in choices: print(v)
+        return
+    torun = choices[0]
+    install_path = os.path.join(installs_folder, torun)
+    if not os.path.exists(install_path):
+        print('Sonarqube %s is not installed' % torun)
+        print('Run "sqman install %s" to install it' % torun)
+        return
+    print('Starting Sonarqube %s ...' % torun)
     shell = None
     if platform.system() == 'Windows':
         bin_path = os.path.join(install_path, 'bin', 'windows-x86-64', 'StartSonar.bat')
@@ -118,6 +129,7 @@ def status():
         os.remove(current_pid_file)  # Cleanup stale PID file
     except Exception as e:
         print(f"Error checking SonarQube status: {e}")
+
 
 def find_sonarqube_pid():
     """Finds the PID of the SonarQube Java process."""
