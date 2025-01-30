@@ -14,7 +14,9 @@ cli.add_command(sq_install.install)
 cli.add_command(sq_install.installed)
 cli.add_command(sq_install.install_plugin)
 cli.add_command(sq_run.run)
+cli.add_command(sq_run.stop)
 cli.add_command(sq_run.status)
+
 
 if __name__ == '__main__':
     cli()
