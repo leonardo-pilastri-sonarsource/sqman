@@ -280,11 +280,11 @@ Or use --force to stop and delete:
 #### Install Plugin
 
 ```bash
-sqman install-plugin <path/to/plugin.jar>
+sqman plugin <path/to/plugin.jar>
 
 # Examples:
-sqman install-plugin ~/sonar-java-plugin/target/sonar-java-plugin-8.0.0.jar
-sqman install-plugin /path/to/custom-plugin.jar
+sqman plugin ~/sonar-java-plugin/target/sonar-java-plugin-8.0.0.jar
+sqman plugin /path/to/custom-plugin.jar
 ```
 
 **How it works:**
@@ -302,7 +302,7 @@ cd ~/sonar-java-plugin
 mvn clean package
 
 # Install it into a SonarQube instance
-sqman install-plugin target/sonar-java-plugin-8.0.0.jar
+sqman plugin target/sonar-java-plugin-8.0.0.jar
 
 # You'll see:
 # Select target SonarQube instance:
@@ -342,7 +342,7 @@ sqman run
 #### Restore Plugin
 
 ```bash
-sqman restore-plugin
+sqman restore
 
 # Interactive flow:
 # 1. Select instance
@@ -359,7 +359,7 @@ sqman restore-plugin
 
 **Example workflow:**
 ```bash
-sqman restore-plugin
+sqman restore
 
 # Step 1: Select instance
 # Select SonarQube instance:

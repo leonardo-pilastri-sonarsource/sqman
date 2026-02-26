@@ -20,7 +20,7 @@ import java.util.concurrent.Callable;
  * Command to install a plugin JAR into a SonarQube instance
  */
 @Command(
-    name = "install-plugin",
+    name = "plugin",
     description = "Install a plugin JAR into a SonarQube instance",
     mixinStandardHelpOptions = true
 )

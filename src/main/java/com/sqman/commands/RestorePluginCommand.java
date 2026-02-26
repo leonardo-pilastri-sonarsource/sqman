@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
  * Command to restore a backed-up original plugin
  */
 @Command(
-    name = "restore-plugin",
+    name = "restore",
     description = "Restore a backed-up original plugin",
     mixinStandardHelpOptions = true
 )

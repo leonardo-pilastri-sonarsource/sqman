@@ -86,7 +86,7 @@ Install custom plugin JARs into SonarQube instances with intelligent backup.
 **Usage Examples:**
 ```bash
 # Install a locally built plugin (interactive mode)
-sqman install-plugin ~/sonar-java-plugin/target/sonar-java-plugin-8.0.0.jar
+sqman plugin ~/sonar-java-plugin/target/sonar-java-plugin-8.0.0.jar
 
 # The command will:
 # 1. Show list of installed instances
@@ -98,7 +98,7 @@ sqman install-plugin ~/sonar-java-plugin/target/sonar-java-plugin-8.0.0.jar
 
 **Workflow:**
 1. Build your plugin locally
-2. Run `sqman install-plugin path/to/plugin.jar`
+2. Run `sqman plugin path/to/plugin.jar`
 3. Select target instance from list
 4. If first install: backs up original plugin → removes old → installs new
 5. If subsequent install: skips backup → removes old → installs new
@@ -132,7 +132,7 @@ Restore backed-up original plugins to SonarQube instances.
 **Usage:**
 ```bash
 # Interactive mode (recommended)
-sqman restore-plugin
+sqman restore
 
 # Flow:
 # 1. Select instance
