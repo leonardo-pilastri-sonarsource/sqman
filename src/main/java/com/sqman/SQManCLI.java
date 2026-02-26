@@ -17,6 +17,7 @@ import com.sqman.commands.*;
         DownloadCommand.class,
         RunCommand.class,
         StopCommand.class,
+        RestartCommand.class,
         ListCommand.class,
         DeleteCommand.class,
         ConfigCommand.class,

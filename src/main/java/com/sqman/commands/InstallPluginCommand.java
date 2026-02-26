@@ -193,8 +193,7 @@ public class InstallPluginCommand implements Callable<Integer> {
                 System.out.println();
                 System.out.println("⚠ Note: Instance is currently running.");
                 System.out.println("Restart the instance for changes to take effect:");
-                System.out.println("  sqman stop");
-                System.out.println("  sqman run " + version);
+                System.out.println("  sqman restart");
             }
 
             return 0;
