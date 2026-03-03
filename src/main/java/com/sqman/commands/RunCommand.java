@@ -7,7 +7,9 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Parameters;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -111,6 +113,9 @@ public class RunCommand implements Callable<Integer> {
                     System.err.println("Default credentials: admin/admin");
                     // Don't fail the command - instance is running
                 }
+            } else {
+                // Display saved token for convenience
+                displayToken(instancePath);
             }
 
             return 0;
@@ -120,6 +125,21 @@ public class RunCommand implements Callable<Integer> {
             System.err.println("Error starting instance: " + e.getMessage());
             e.printStackTrace();
             return 1;
+        }
+    }
+
+    private void displayToken(Path instancePath) {
+        try {
+            Path tokenFile = instancePath.resolve("token");
+            String token = Files.readString(tokenFile).trim();
+            System.out.println("Analysis Token:");
+            System.out.println("  " + token);
+            System.out.println();
+            System.out.println("Use with:");
+            System.out.println("  mvn sonar:sonar -Dsonar.token=" + token);
+            System.out.println();
+        } catch (IOException e) {
+            // Token file unreadable - not critical, just skip
         }
     }
 
